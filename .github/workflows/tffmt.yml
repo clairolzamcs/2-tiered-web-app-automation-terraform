@@ -1,6 +1,4 @@
-# This example executes a run step only if the format check failed.
-
-name: Check terraform file formatting
+name: tffmt
 
 on: [push]
 
