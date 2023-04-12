@@ -1,3 +1,7 @@
+# exclude git and terraform sources
+.git
+.terraform
+
 # Local .terraform directories
 **/.terraform/*
 
