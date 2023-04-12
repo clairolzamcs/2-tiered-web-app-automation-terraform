@@ -65,85 +65,85 @@ resource "aws_subnet" "private" {
   )
 }
 
-# # Create Internet Gateway
-# resource "aws_internet_gateway" "this" {
-#   vpc_id = aws_vpc.this.id
+# Create Internet Gateway
+resource "aws_internet_gateway" "this" {
+  vpc_id = aws_vpc.this.id
 
-#   tags = merge(
-#     local.default_tags,
-#     {
-#       "Name" = "${local.name_prefix}-Igw"
-#     }
-#   )
-# }
+  tags = merge(
+    local.default_tags,
+    {
+      "Name" = "${local.name_prefix}-Igw"
+    }
+  )
+}
 
-# # Create NAT Gateway
-# resource "aws_nat_gateway" "this" {
-#   allocation_id = aws_eip.this.id
-#   subnet_id     = aws_subnet.private[1].id
+# Create NAT Gateway
+resource "aws_nat_gateway" "this" {
+  allocation_id = aws_eip.this.id
+  subnet_id     = aws_subnet.private[1].id
 
-#   tags = merge(
-#     local.default_tags,
-#     {
-#       "Name" = "${local.name_prefix}-Ngw"
-#     }
-#   )
-# }
+  tags = merge(
+    local.default_tags,
+    {
+      "Name" = "${local.name_prefix}-Ngw"
+    }
+  )
+}
 
-# # Create Elastic IP for NAT Gateway
-# resource "aws_eip" "this" {
-#   vpc = true
+# Create Elastic IP for NAT Gateway
+resource "aws_eip" "this" {
+  vpc = true
 
-#   tags = merge(
-#     local.default_tags,
-#     {
-#       "Name" = "${local.name_prefix}-Ngw-Eip"
-#     }
-#   )
-# }
+  tags = merge(
+    local.default_tags,
+    {
+      "Name" = "${local.name_prefix}-Ngw-Eip"
+    }
+  )
+}
 
-# # Route table to route add default gateway pointing to Internet Gateway (IGW)
-# resource "aws_route_table" "public" {
-#   vpc_id = aws_vpc.this.id
-#   route {
-#     cidr_block = "0.0.0.0/0"
-#     gateway_id = aws_internet_gateway.this.id
-#   }
+# Route table to route add default gateway pointing to Internet Gateway (IGW)
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.this.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.this.id
+  }
 
-#   tags = merge(
-#     local.default_tags,
-#     {
-#       "Name" = "${local.name_prefix}-Public-Rt"
-#     }
-#   )
-# }
+  tags = merge(
+    local.default_tags,
+    {
+      "Name" = "${local.name_prefix}-Public-Rt"
+    }
+  )
+}
 
-# # Route table to route add default gateway pointing to NAT Gateway (NGW)
-# resource "aws_route_table" "private" {
-#   vpc_id = aws_vpc.this.id
-#   route {
-#     cidr_block = "0.0.0.0/0"
-#     gateway_id = aws_nat_gateway.this.id
-#   }
+# Route table to route add default gateway pointing to NAT Gateway (NGW)
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.this.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_nat_gateway.this.id
+  }
 
-#   tags = merge(
-#     local.default_tags,
-#     {
-#       "Name" = "${local.name_prefix}-Private-Rt"
-#     }
-#   )
-# }
+  tags = merge(
+    local.default_tags,
+    {
+      "Name" = "${local.name_prefix}-Private-Rt"
+    }
+  )
+}
 
-# # Associate subnets with the custom public route table
-# resource "aws_route_table_association" "public" {
-#   count          = length(aws_subnet.public)
-#   route_table_id = aws_route_table.public.id
-#   subnet_id      = aws_subnet.public[count.index].id
-# }
+# Associate subnets with the custom public route table
+resource "aws_route_table_association" "public" {
+  count          = length(aws_subnet.public)
+  route_table_id = aws_route_table.public.id
+  subnet_id      = aws_subnet.public[count.index].id
+}
 
-# # Associate subnets with the custom private route table
-# resource "aws_route_table_association" "private" {
-#   count          = length(aws_subnet.private)
-#   route_table_id = aws_route_table.private.id
-#   subnet_id      = aws_subnet.private[count.index].id
-# }
+# Associate subnets with the custom private route table
+resource "aws_route_table_association" "private" {
+  count          = length(aws_subnet.private)
+  route_table_id = aws_route_table.private.id
+  subnet_id      = aws_subnet.private[count.index].id
+}
