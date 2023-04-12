@@ -17,15 +17,21 @@ module "globalvars" {
   source = "../globalvars"
 }
 
-module "network" {
-  source = "../aws_network"
+# Use remote state to retrieve the data
+data "terraform_remote_state" "network" { // This is to use Outputs from Remote State
+  backend = "s3"
+  config = {
+    bucket = "dev-finalproj-group1"          // Bucket from where to GET Terraform State
+    key    = "dev/network/terraform.tfstate" // Object name in the bucket to GET Terraform State
+    region = "us-east-1"                     // Region where bucket created
+  }
 }
 
-# Creating Security Group for ELB
-resource "aws_security_group" "elb" {
-  name        = "ELB Security Group"
-  description = "Security Group for ELB"
-  vpc_id      = module.network.vpc_id
+# Creating Security Group for ALB
+resource "aws_security_group" "alb" {
+  name        = "ALB Security Group"
+  description = "Security Group for ALB"
+  vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
 
   # Inbound Rules
   # HTTP access from anywhere
@@ -35,13 +41,7 @@ resource "aws_security_group" "elb" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  # HTTPS access from anywhere
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+
   # SSH access from anywhere
   ingress {
     from_port   = 22
@@ -49,6 +49,7 @@ resource "aws_security_group" "elb" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
   # Outbound Rules
   # Internet access to anywhere
   egress {
@@ -61,7 +62,7 @@ resource "aws_security_group" "elb" {
   tags = merge(
     local.default_tags,
     {
-      "Name" = "${local.name_prefix}-Elb-Sg"
+      "Name" = "${local.name_prefix}-Alb-Sg"
     }
   )
 }
