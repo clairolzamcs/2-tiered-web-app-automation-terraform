@@ -73,7 +73,7 @@ resource "aws_autoscaling_group" "web_asg" {
   min_size             = var.min_capacity
   desired_capacity     = var.desired_capacity
   max_size             = var.max_capacity
-  target_group_arns    = [aws_lb_target_group.web_lb_target_group.arn]
+  target_group_arns    = [module.web-alb.tg_arn]
   launch_configuration = module.web-launch-config.launch_config_name
   enabled_metrics = [
     "GroupMinSize",
@@ -147,42 +147,13 @@ resource "aws_cloudwatch_metric_alarm" "metric_alarm_cpu_web_down" {
   alarm_actions     = [aws_autoscaling_policy.asg_policy_web_down.arn]
 }
 
-# Create AWS ALB
-resource "aws_lb" "web_lb" {
-  name               = "web-lb"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups = [
-    module.web-sg.sg_id
-  ]
-  subnets = data.terraform_remote_state.network.outputs.public_subnet_ids
-
-  tags = merge(
-    local.default_tags,
-    {
-      "Name" = "${local.name_prefix}-Elb"
-    }
-  )
-}
-
-# Create Target Group for ALB
-resource "aws_lb_target_group" "web_lb_target_group" {
-  name     = "web-lb-tg"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = data.terraform_remote_state.network.outputs.vpc_id
-}
-
-# Create listener
-resource "aws_lb_listener" "web_lb_listener" {
-  load_balancer_arn = aws_lb.web_lb.arn
-  port              = "80"
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.web_lb_target_group.arn
-  }
+# Webserver Launch Configuration
+module "web-alb" {
+  source        = "../../../modules/aws_alb"
+  env           = var.env
+  name          = "web"
+  instance_type = var.instance_type
+  sg_id         = module.web-sg.sg_id
 }
 
 # Bastion Module Security Group

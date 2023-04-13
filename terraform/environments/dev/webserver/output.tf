@@ -8,5 +8,5 @@ output "bastion_sg_id" {
 
 
 output "alb_dns_name" {
-  value = aws_lb.web_lb.name
+  value = module.web-alb.name
 }
