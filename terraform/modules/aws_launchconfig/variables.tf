@@ -1,8 +1,14 @@
 # Variable to signal the current environment 
 variable "env" {
-  default     = "Dev"
+  default     = "dev"
   type        = string
   description = "Deployment Environment"
+}
+
+variable "name" {
+  default     = "launch-config"
+  type        = string
+  description = "Name of the Launch Configuration"
 }
 
 variable "instance_type" {
@@ -11,12 +17,7 @@ variable "instance_type" {
   type        = string
 }
 
-variable "prefix" {
-  type        = string
-  description = "Name prefix"
-}
-
 variable "sg_id" {
   type        = string
-  description = "Webserver security group id"
+  description = "security group id"
 }
