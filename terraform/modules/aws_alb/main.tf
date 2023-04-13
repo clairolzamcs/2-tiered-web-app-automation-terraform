@@ -32,8 +32,8 @@ resource "aws_lb" "this" {
   name               = "${local.name_prefix}-${var.name}"
   internal           = false
   load_balancer_type = "application"
-  security_groups = [var.sg_id]
-  subnets = data.terraform_remote_state.network.outputs.public_subnet_ids
+  security_groups    = [var.sg_id]
+  subnets            = data.terraform_remote_state.network.outputs.public_subnet_ids
 
   tags = merge(
     local.default_tags,
