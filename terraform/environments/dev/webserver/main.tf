@@ -2,18 +2,9 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# module "vpc-dev" {
-#   source              = "../../../modules/aws_network"
-#   env                 = var.env
-#   vpc_cidr            = var.vpc_cidr
-#   public_cidr_blocks  = var.public_cidr_blocks
-#   private_cidr_blocks = var.private_cidr_blocks
-# }
-
 module "globalvars" {
   source = "../../../modules/globalvars"
 }
-
 
 locals {
   default_tags = merge(
@@ -44,51 +35,29 @@ data "aws_ami" "latest_amazon_linux" {
   }
 }
 
-# Creating Security Group for web instances
-resource "aws_security_group" "sg_web" {
-  name        = "Web Security Group"
-  description = "Security Group for Web"
-  vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
+# Webserver Module Security Group
+module "web-sg" {
+  source = "../../../modules/aws_sg"
+  env    = var.env
+  name   = "webserver"
+  desc   = "webserver-security-group"
+  vpc_id = data.terraform_remote_state.network.outputs.vpc_id
+}
 
-  # Inbound Rules
-  # HTTP access from anywhere
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # SSH access from anywhere
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Outbound Rules
-  # Internet access to anywhere
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = merge(
-    local.default_tags,
-    {
-      "Name" = "${local.name_prefix}-Web-Sg"
-    }
-  )
+# Application Load Balancer Module Security Group
+module "alb-sg" {
+  source = "../../../modules/aws_sg"
+  env    = var.env
+  name   = "alb"
+  desc   = "alb-security-group"
+  vpc_id = data.terraform_remote_state.network.outputs.vpc_id
 }
 
 resource "aws_launch_configuration" "web_launchconfig" {
   name                 = "${local.name_prefix}-LaunchConfig"
   image_id             = data.aws_ami.latest_amazon_linux.id
   instance_type        = var.instance_type
-  security_groups      = [aws_security_group.sg_web.id]
+  security_groups      = [module.web-sg.sg_id]
   key_name             = aws_key_pair.web_key.key_name
   iam_instance_profile = data.aws_iam_instance_profile.lab_instance_profile.name
   user_data = templatefile("${path.module}/install_httpd.sh.tpl",
@@ -145,7 +114,7 @@ resource "aws_autoscaling_group" "web_asg" {
     create_before_destroy = true
   }
 
-  tag  {
+  tag {
     key                 = "Name"
     value               = "${local.name_prefix}-Webserver"
     propagate_at_launch = true
@@ -209,7 +178,7 @@ resource "aws_lb" "web_lb" {
   internal           = false
   load_balancer_type = "application"
   security_groups = [
-    aws_security_group.sg_web.id
+    module.web-sg.sg_id
   ]
   subnets = data.terraform_remote_state.network.outputs.public_subnet_ids
 
@@ -241,36 +210,20 @@ resource "aws_lb_listener" "web_lb_listener" {
   }
 }
 
-# Creating Security Group for bastion instances
-resource "aws_security_group" "sg_bastion" {
-  name        = "Bastion Security Group"
-  description = "Security Group for Bastion"
-  vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
-
-  # Inbound Rules
-  ingress {
+# Bastion Module Security Group
+module "bastion-sg" {
+  source = "../../../modules/aws_sg"
+  env    = var.env
+  name   = "bastion"
+  desc   = "bastion-security-group"
+  vpc_id = data.terraform_remote_state.network.outputs.vpc_id
+  ingress_rules = [{
     description = "SSH from private IP of Cloud9 machine"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["${var.my_private_ip}/32", "${var.my_public_ip}/32"]
-  }
-
-  # Outbound Rules
-  # Internet access to anywhere
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = merge(
-    local.default_tags,
-    {
-      "Name" = "${local.name_prefix}-Bastion-Sg"
-    }
-  )
+  }]
 }
 
 # Bastion deployment
@@ -279,16 +232,17 @@ resource "aws_instance" "bastion" {
   instance_type               = var.instance_type
   key_name                    = aws_key_pair.web_key.key_name
   subnet_id                   = data.terraform_remote_state.network.outputs.public_subnet_ids[0]
-  security_groups             = [aws_security_group.sg_bastion.id]
+  security_groups             = [module.bastion-sg.sg_id]
   associate_public_ip_address = true
 
   lifecycle {
     create_before_destroy = true
   }
 
-  tags = merge(local.default_tags,
+  tags = merge(
+    local.default_tags,
     {
-      Name = "my_bastion"
+      "Name" = "${local.name_prefix}-bastion"
     }
   )
 }

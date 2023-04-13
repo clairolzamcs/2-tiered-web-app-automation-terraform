@@ -21,48 +21,45 @@ module "globalvars" {
 data "terraform_remote_state" "network" { // This is to use Outputs from Remote State
   backend = "s3"
   config = {
-    bucket = "dev-finalproj-group1-czcs"          // Bucket from where to GET Terraform State
+    bucket = "dev-finalproj-group1-czcs"     // Bucket from where to GET Terraform State
     key    = "dev/network/terraform.tfstate" // Object name in the bucket to GET Terraform State
     region = "us-east-1"                     // Region where bucket created
   }
 }
 
-# Creating Security Group for ALB
-resource "aws_security_group" "alb" {
-  name        = "ALB Security Group"
-  description = "Security Group for ALB"
-  vpc_id      = data.terraform_remote_state.network.outputs.vpc_id
+# Create Security Group Module
+resource "aws_security_group" "this" {
+  name        = "${var.env}-${var.name}" // default: dev-sg
+  description = "${var.env}-${var.desc}" // default: dev-sg-description
+  vpc_id      = var.vpc_id
 
-  # Inbound Rules
-  # HTTP access from anywhere
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+  dynamic "ingress" {
+    for_each = var.ingress_rules
+
+    content {
+      description = ingress.value.description
+      from_port   = ingress.value.from_port
+      to_port     = ingress.value.to_port
+      protocol    = ingress.value.protocol
+      cidr_blocks = ingress.value.cidr_blocks
+    }
   }
 
-  # SSH access from anywhere
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  dynamic "egress" {
+    for_each = var.egress_rules
 
-  # Outbound Rules
-  # Internet access to anywhere
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    content {
+      from_port   = egress.value.from_port
+      to_port     = egress.value.to_port
+      protocol    = egress.value.protocol
+      cidr_blocks = egress.value.cidr_blocks
+    }
   }
 
   tags = merge(
     local.default_tags,
     {
-      "Name" = "${local.name_prefix}-Alb-Sg"
+      "Name" = "${local.name_prefix}-${var.env}-${var.name}-sg" // Default: group1-dev-sg-sg
     }
   )
 }

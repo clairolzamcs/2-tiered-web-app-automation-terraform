@@ -22,17 +22,6 @@ variable "owner" {
   description = "Name of owner"
 }
 
-
-# variable "target_group_arn" {
-#   type        = string
-#   description = "calling load_balancers id"
-# }
-
-# variable "launch_config_name" {
-#   type        = string
-#   description = "calling template_name from launch config"
-# }
-
 variable "min_capacity" {
   default     = 1
   type        = number
@@ -60,5 +49,5 @@ variable "my_private_ip" {
 variable "my_public_ip" {
   type        = string
   description = "Public IP of my Cloud 9 station to be opened in bastion ingress"
-  default     = "54.163.154.24"
+  default     = "54.208.59.173"
 }
