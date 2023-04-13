@@ -21,3 +21,10 @@ variable "sg_id" {
   type        = string
   description = "security group id"
 }
+
+# This is a variable that is used to store the path to the keypair file.
+variable "keypair_path" {
+  type        = string
+  description = "File path where keypair is located"
+  default     = ""
+}

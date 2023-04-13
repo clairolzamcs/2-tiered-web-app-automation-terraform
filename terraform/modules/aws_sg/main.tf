@@ -29,8 +29,8 @@ data "terraform_remote_state" "network" { // This is to use Outputs from Remote 
 
 # Create Security Group Module
 resource "aws_security_group" "this" {
-  name        = "${var.env}-${var.name}" // default: dev-sg
-  description = "${var.env}-${var.desc}" // default: dev-sg-description
+  name        = "${local.name_prefix}-${var.name}" // default: group1-dev-sg
+  description = "${local.name_prefix}-${var.desc}" // default: group1-dev-sg-description
   vpc_id      = var.vpc_id
 
   dynamic "ingress" {
@@ -59,7 +59,7 @@ resource "aws_security_group" "this" {
   tags = merge(
     local.default_tags,
     {
-      "Name" = "${local.name_prefix}-${var.env}-${var.name}-sg" // Default: group1-dev-sg-sg
+      "Name" = "${local.name_prefix}-${var.name}-sg" // Default: group1-dev-sg-sg
     }
   )
 }

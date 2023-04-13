@@ -57,48 +57,15 @@ module "alb-sg" {
   vpc_id = data.terraform_remote_state.network.outputs.vpc_id
 }
 
+# Webserver Launch Configuration
 module "web-launch-config" {
-  source = "../../../modules/aws_launchconfig"
-  env    = var.env
-  name   = "web-launch-config"
+  source        = "../../../modules/aws_launchconfig"
+  env           = var.env
+  name          = "web-launch-config"
+  keypair_path  = aws_key_pair.web_key.key_name
   instance_type = var.instance_type
-  sg_id = module.web-sg.sg_id
+  sg_id         = module.web-sg.sg_id
 }
-
-# resource "aws_launch_configuration" "web_launchconfig" {
-#   name                 = "${local.name_prefix}-LaunchConfig"
-#   image_id             = data.aws_ami.latest_amazon_linux.id
-#   instance_type        = var.instance_type
-#   security_groups      = [module.web-sg.sg_id]
-#   key_name             = aws_key_pair.web_key.key_name
-#   iam_instance_profile = data.aws_iam_instance_profile.lab_instance_profile.name
-#   user_data = templatefile("${path.module}/install_httpd.sh.tpl",
-#     {
-#       name   = var.owner,
-#       env    = var.env,
-#       prefix = local.prefix
-#     }
-#   )
-#   root_block_device {
-#     encrypted = true
-#   }
-
-#   #added to enable Instance Metadata Service V2 (checkov error)
-#   metadata_options {
-#     http_endpoint = "enabled"
-#     http_tokens   = "required"
-#   }
-
-#   lifecycle {
-#     create_before_destroy = true
-#   }
-# }
-
-# # Adding SSH key to Amazon EC2
-# resource "aws_key_pair" "web_key" {
-#   key_name   = local.name_prefix
-#   public_key = file("${local.name_prefix}.pub")
-# }
 
 # Creating an Auto scaling group for webservers
 resource "aws_autoscaling_group" "web_asg" {
@@ -107,7 +74,7 @@ resource "aws_autoscaling_group" "web_asg" {
   desired_capacity     = var.desired_capacity
   max_size             = var.max_capacity
   target_group_arns    = [aws_lb_target_group.web_lb_target_group.arn]
-  launch_configuration = aws_launch_configuration.web_launchconfig.name
+  launch_configuration = module.web-launch-config.launch_config_name
   enabled_metrics = [
     "GroupMinSize",
     "GroupMaxSize",
@@ -234,7 +201,7 @@ module "bastion-sg" {
   }]
 }
 
-# Bastion deployment
+# Bastion Instance Deployment
 resource "aws_instance" "bastion" {
   ami                         = data.aws_ami.latest_amazon_linux.id
   instance_type               = var.instance_type
@@ -253,4 +220,10 @@ resource "aws_instance" "bastion" {
       "Name" = "${local.name_prefix}-bastion"
     }
   )
+}
+
+# Adding SSH key to Amazon EC2
+resource "aws_key_pair" "web_key" {
+  key_name   = local.name_prefix
+  public_key = file("${local.name_prefix}.pub")
 }

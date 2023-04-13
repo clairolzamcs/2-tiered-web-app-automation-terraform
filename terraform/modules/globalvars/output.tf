@@ -1,11 +1,11 @@
 # Default tags
 output "default_tags" {
   value = {
-    "Owner" = "Group1"
+    "Owner" = "group1"
   }
 }
 
 # Prefix to identify resources
 output "prefix" {
-  value = "Group1"
+  value = "group1"
 }

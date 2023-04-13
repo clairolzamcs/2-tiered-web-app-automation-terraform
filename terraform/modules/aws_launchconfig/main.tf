@@ -30,11 +30,11 @@ data "aws_iam_instance_profile" "lab_instance_profile" {
 }
 
 resource "aws_launch_configuration" "this" {
-  name                 = "${var.env}-${var.name}"
+  name                 = "${local.name_prefix}-${var.name}"
   image_id             = data.aws_ami.latest_amazon_linux.id
   instance_type        = var.instance_type
   security_groups      = [var.sg_id]
-  key_name             = aws_key_pair.web_key.key_name
+  key_name             = var.keypair_path
   iam_instance_profile = data.aws_iam_instance_profile.lab_instance_profile.name
   user_data = templatefile("${path.module}/install_httpd.sh.tpl",
     {
@@ -56,10 +56,6 @@ resource "aws_launch_configuration" "this" {
   lifecycle {
     create_before_destroy = true
   }
-}
-resource "aws_key_pair" "web_key" {
-  key_name   = local.name_prefix
-  public_key = file("${local.name_prefix}.pub")
 }
 
 # resource "aws_launch_configuration" "this" {
