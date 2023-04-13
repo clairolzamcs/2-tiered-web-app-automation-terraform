@@ -24,7 +24,7 @@ variable "sg_id" {
 
 # This is a variable that is used to store the path to the keypair file.
 variable "keypair_path" {
+  default     = ""
   type        = string
   description = "File path where keypair is located"
-  default     = ""
 }
