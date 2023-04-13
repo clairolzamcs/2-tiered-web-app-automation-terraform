@@ -80,7 +80,7 @@ resource "aws_internet_gateway" "this" {
 # Create NAT Gateway
 resource "aws_nat_gateway" "this" {
   allocation_id = aws_eip.this.id
-  subnet_id     = aws_subnet.private[1].id
+  subnet_id     = aws_subnet.public[1].id
 
   tags = merge(
     local.default_tags,
