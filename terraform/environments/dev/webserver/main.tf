@@ -39,6 +39,11 @@ data "aws_iam_instance_profile" "lab_instance_profile" {
   name = "LabInstanceProfile"
 }
 
+# Get my public ip or cloud9 instance public ip
+data "http" "icanhazip" {
+  url = "https://ipv4.icanhazip.com/"
+}
+
 # Webserver Module Security Group
 module "web-sg" {
   source = "../../../modules/aws_sg"
@@ -68,7 +73,8 @@ module "bastion-sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["${var.my_private_ip}/32", "${var.my_public_ip}/32"]
+    # cidr_blocks = ["${var.my_private_ip}/32", "${var.my_public_ip}/32"]
+    cidr_blocks = ["${chomp(data.http.icanhazip.response_body)}/32"]
   }]
 }
 
