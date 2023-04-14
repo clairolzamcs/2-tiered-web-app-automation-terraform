@@ -56,6 +56,7 @@ tf apply -auto-approve
 1. After deploying the webserver, there will be an output called `website` in the terminal or in `AWS Console > Load Balancers under EC2`.
 2. Copy and paste it to the web browser.
 
+## Destroy / Cleanup of Environment
 > **IMPORTANT:** Repeat these steps for each environment.
 
 > **NOTE:** Update `<environment>` to **dev, staging** or **prod**.
