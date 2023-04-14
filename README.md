@@ -2,6 +2,7 @@
 
 ## Deployment Steps
 > **IMPORTANT:** Repeat these steps for each environment.
+
 > **NOTE:** Update `<environment>` to ***dev, staging or prod***.
 
 ### S3 Bucket Setup
@@ -19,7 +20,7 @@ alias tf=terraform
 ### Deployment of Network Infrastructure
 1. Go to `~/terraform/environments/<environment>/network/` directory.
     ```
-    cd terraform/environments/<environment>/network/
+    cd ~/terraform/environments/<environment>/network/
     ```
 2. Deploy the **VPC, Public and Private Subnets, Internet Gateway, NAT Gateway, Elastic IP and Route Tables**.
     ```
@@ -31,7 +32,7 @@ alias tf=terraform
 ### SSH Keys Setup
 1. Go to `~/terraform/environments/<environment>/webserver/` directory.
     ```
-    cd terraform/environments/<environment>/webserver/
+    cd ~/terraform/environments/<environment>/webserver/
     ```
 2. Generate SSH keys:
     ```
@@ -52,18 +53,18 @@ tf plan
 tf apply -auto-approve
 ```
 ### Access the Webpage via Load Balancer's DNS Name
-1. After deploying the webserver, there will be an output called `website`.
+1. After deploying the webserver, there will be an output called `website` in the terminal or in `AWS Console > Load Balancers under EC2`.
 2. Copy and paste it to the web browser.
 
-## Destroy / Cleanup of Environment
 > **IMPORTANT:** Repeat these steps for each environment.
+
 > **NOTE:** Update `<environment>` to **dev, staging** or **prod**.
-1. Destroy the `webservers ` first.
+1. Destroy the `webservers` first.
     ```
     cd ~/terraform/environments/<environment>/webserver/
     tf destroy -auto-approve
     ```
-2. Then network.
+2. Then `network`.
     ```
     cd ~/terraform/environments/<environment>/network/
     tf destroy -auto-approve
