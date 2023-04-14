@@ -5,12 +5,6 @@ variable "env" {
   description = "Deployment Environment"
 }
 
-variable "name" {
-  default     = "launch-config"
-  type        = string
-  description = "Name of the Launch Configuration"
-}
-
 variable "instance_type" {
   default     = "t3.micro"
   description = "Type of the instance"

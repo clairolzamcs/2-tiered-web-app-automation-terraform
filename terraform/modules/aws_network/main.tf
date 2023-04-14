@@ -30,7 +30,7 @@ resource "aws_vpc" "this" {
   tags = merge(
     local.default_tags,
     {
-      "Name" = "${local.name_prefix}-Vpc"
+      "Name" = "${local.name_prefix}-vpc"
     }
   )
 }
@@ -45,7 +45,7 @@ resource "aws_subnet" "public" {
   tags = merge(
     local.default_tags,
     {
-      "Name" = "${local.name_prefix}-Public-Subnet${count.index + 1}"
+      "Name" = "${local.name_prefix}-public-subnet-${count.index + 1}"
     }
   )
 }
@@ -60,7 +60,7 @@ resource "aws_subnet" "private" {
   tags = merge(
     local.default_tags,
     {
-      "Name" = "${local.name_prefix}-Private-Subnet${count.index + 1}"
+      "Name" = "${local.name_prefix}-private-subnet-${count.index + 1}"
     }
   )
 }
@@ -72,7 +72,7 @@ resource "aws_internet_gateway" "this" {
   tags = merge(
     local.default_tags,
     {
-      "Name" = "${local.name_prefix}-Igw"
+      "Name" = "${local.name_prefix}-igw"
     }
   )
 }
@@ -85,7 +85,7 @@ resource "aws_nat_gateway" "this" {
   tags = merge(
     local.default_tags,
     {
-      "Name" = "${local.name_prefix}-Ngw"
+      "Name" = "${local.name_prefix}-ngw"
     }
   )
 }
@@ -97,7 +97,7 @@ resource "aws_eip" "this" {
   tags = merge(
     local.default_tags,
     {
-      "Name" = "${local.name_prefix}-Ngw-Eip"
+      "Name" = "${local.name_prefix}-ngw-igw"
     }
   )
 }
@@ -113,7 +113,7 @@ resource "aws_route_table" "public" {
   tags = merge(
     local.default_tags,
     {
-      "Name" = "${local.name_prefix}-Public-Rt"
+      "Name" = "${local.name_prefix}-public-route-table"
     }
   )
 }
@@ -129,7 +129,7 @@ resource "aws_route_table" "private" {
   tags = merge(
     local.default_tags,
     {
-      "Name" = "${local.name_prefix}-Private-Rt"
+      "Name" = "${local.name_prefix}-private-route-table"
     }
   )
 }

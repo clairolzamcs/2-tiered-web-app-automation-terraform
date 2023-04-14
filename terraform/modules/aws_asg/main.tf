@@ -5,7 +5,7 @@ provider "aws" {
 data "terraform_remote_state" "network" {
   backend = "s3"
   config = {
-    bucket = "${var.env}-finalproj-group1-czcs"
+    bucket = "${var.env}-finalproj-group1"
     key    = "${var.env}/network/terraform.tfstate"
     region = "us-east-1"
   }
@@ -28,7 +28,7 @@ module "globalvars" {
 
 # Creating an Auto scaling group for webservers
 resource "aws_autoscaling_group" "this" {
-  name                 = "${local.name_prefix}-AutoScalingGroup"
+  name                 = "${local.name_prefix}-${var.name}"
   min_size             = var.min_capacity
   desired_capacity     = var.desired_capacity
   max_size             = var.max_capacity
@@ -48,12 +48,11 @@ resource "aws_autoscaling_group" "this" {
     create_before_destroy = true
   }
 
-  tags = merge(
-    local.default_tags,
-    {
-      "Name" = "${local.name_prefix}-Webserver"
-    }
-  )
+  tag {
+    key                 = "Name"
+    value               = "${local.name_prefix}-webserver"
+    propagate_at_launch = true
+  }
 }
 
 #Policy to change autoscaling group according to alarm by cloudwatch

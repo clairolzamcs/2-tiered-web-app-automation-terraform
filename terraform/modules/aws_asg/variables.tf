@@ -1,8 +1,15 @@
 variable "env" {
-  default     = "Dev"
+  default     = "dev"
   type        = string
   description = "Deployment Environment"
 }
+
+variable "name" {
+  default     = "asg"
+  type        = string
+  description = "Name of the Auto Scaling Group"
+}
+
 
 variable "target_group_arn" {
   type        = string

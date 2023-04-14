@@ -4,11 +4,13 @@ variable "env" {
   type        = string
   description = "Deployment Environment"
 }
+
 variable "name" {
   default     = "sg"
   type        = string
   description = "Name of the Security Group"
 }
+
 variable "desc" {
   default     = "sg-description"
   type        = string

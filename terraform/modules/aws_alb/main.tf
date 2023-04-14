@@ -27,37 +27,25 @@ data "terraform_remote_state" "network" {
   }
 }
 
-# Use remote state to retrieve the sg data
-data "terraform_remote_state" "sg" {
-  backend = "s3"
-  config = {
-    bucket = "dev-finalproj-group1"
-    key    = "dev/sg/terraform.tfstate"
-    region = "us-east-1"
-  }
-}
-
 # Create AWS ALB
 resource "aws_lb" "this" {
-  name               = "web-lb"
+  name               = "${local.name_prefix}-${var.name}"
   internal           = false
   load_balancer_type = "application"
-  security_groups = [
-    "${data.terraform_remote_state.sg.outputs.alb_sg}"
-  ]
-  subnets = data.terraform_remote_state.network.outputs.public_subnet_ids
+  security_groups    = [var.sg_id]
+  subnets            = data.terraform_remote_state.network.outputs.public_subnet_ids
 
   tags = merge(
     local.default_tags,
     {
-      "Name" = "${local.name_prefix}-Elb"
+      "Name" = "${local.name_prefix}-${var.name}-alb"
     }
   )
 }
 
 # Create Target Group for ALB
 resource "aws_lb_target_group" "this" {
-  name     = "web-lb-tg"
+  name     = "${local.name_prefix}-${var.name}-target-group"
   port     = 80
   protocol = "HTTP"
   vpc_id   = data.terraform_remote_state.network.outputs.vpc_id
