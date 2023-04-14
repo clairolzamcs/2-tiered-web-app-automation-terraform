@@ -1,0 +1,18 @@
+name: tffmt
+
+on: [push]
+
+jobs:
+  check_format:
+    runs-on: ubuntu-latest
+    name: Check terraform file are formatted correctly
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: terraform fmt
+        uses: dflook/terraform-fmt-check@v1
+
+      - name: Wrong formatting found
+        if: ${{ failure() && steps.fmt-check.outputs.failure-reason == 'check-failed' }}
+        run: echo "terraform formatting check failed"
