@@ -43,11 +43,11 @@ variable "desired_capacity" {
 variable "my_private_ip" {
   type        = string
   description = "Private IP of my Cloud 9 station to be opened in bastion ingress"
-  default     = "172.31.14.122"
+  default     = "172.31.4.127"
 }
 
 variable "my_public_ip" {
   type        = string
   description = "Public IP of my Cloud 9 station to be opened in bastion ingress"
-  default     = "44.192.129.93"
+  default     = "52.3.235.18"
 }

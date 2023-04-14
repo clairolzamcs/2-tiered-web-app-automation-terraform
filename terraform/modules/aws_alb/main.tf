@@ -21,7 +21,7 @@ module "globalvars" {
 data "terraform_remote_state" "network" {
   backend = "s3"
   config = {
-    bucket = "dev-finalproj-group1"
+    bucket = "dev-finalproj-group1-czcs"
     key    = "dev/network/terraform.tfstate"
     region = "us-east-1"
   }
