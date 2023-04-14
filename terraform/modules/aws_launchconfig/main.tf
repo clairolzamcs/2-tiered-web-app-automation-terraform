@@ -39,9 +39,10 @@ resource "aws_launch_configuration" "this" {
   iam_instance_profile = data.aws_iam_instance_profile.lab_instance_profile.name
   user_data = templatefile("${path.module}/install_httpd.sh.tpl",
     {
-      name   = local.default_tags.Owner,
-      env    = var.env,
-      prefix = local.prefix
+      name           = local.default_tags.Owner,
+      env            = var.env,
+      prefix         = local.prefix,
+      s3_images_path = "s3://${var.env}-finalproj-group1/images"
     }
   )
   root_block_device {

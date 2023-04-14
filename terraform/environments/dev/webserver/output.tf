@@ -6,6 +6,6 @@ output "bastion_sg_id" {
   value = module.bastion-sg.sg_id
 }
 
-output "web_alb_name" {
+output "website" {
   value = module.web-alb.name
 }
