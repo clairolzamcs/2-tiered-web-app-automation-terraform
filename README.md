@@ -43,7 +43,6 @@ alias tf=terraform
     chmod 400 group1-<environment>
     ```
 ### Deployment of Webservers
-> **NOTE:** Replace both `my_private_ip` and `my_public_ip` in `~/terraform/environments/<environment>/webservers/variables.tf` with your Cloud9 instance's IPs.
 
 Deploy the **Security Groups, Application Load Balancer, Launch Configuration, Bastion and Auto Scaling Group**. It also creates images within the S3 Bucket and uplaods the images from images folder.
 ```
@@ -73,4 +72,4 @@ tf apply -auto-approve
 
 [![tfsec](https://github.com/Project-GroupOne/final-project/actions/workflows/tfsec.yml/badge.svg)](https://github.com/Project-GroupOne/final-project/actions/workflows/tfsec.yml)
 
-[![build](https://github.com/Project-GroupOne/final-project/actions/workflows/trivy.yml/badge.svg)](https://github.com/Project-GroupOne/final-project/actions/workflows/trivy.yml)
+<!-- [![build](https://github.com/Project-GroupOne/final-project/actions/workflows/trivy.yml/badge.svg)](https://github.com/Project-GroupOne/final-project/actions/workflows/trivy.yml) -->

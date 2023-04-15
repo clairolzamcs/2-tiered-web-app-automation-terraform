@@ -73,7 +73,6 @@ module "bastion-sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    # cidr_blocks = ["${var.my_private_ip}/32", "${var.my_public_ip}/32"]
     cidr_blocks = ["${chomp(data.http.icanhazip.response_body)}/32"]
   }]
 }

@@ -39,15 +39,3 @@ variable "desired_capacity" {
   type        = number
   description = "Desired capacity of Auto scaling group"
 }
-
-variable "my_private_ip" {
-  type        = string
-  description = "Private IP of my Cloud 9 station to be opened in bastion ingress"
-  default     = "172.31.4.127"
-}
-
-variable "my_public_ip" {
-  type        = string
-  description = "Public IP of my Cloud 9 station to be opened in bastion ingress"
-  default     = "52.3.235.18"
-}
