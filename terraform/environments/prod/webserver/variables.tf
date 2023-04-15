@@ -5,13 +5,13 @@ variable "instance_type" {
 }
 
 variable "env" {
-  default     = "dev"
+  default     = "prod"
   type        = string
-  description = "Deployment Environment"
+  description = "Production Environment"
 }
 
 variable "asg_desired_capacity" {
-  default     = 2
+  default     = 3
   type        = string
   description = "Desired capacity of auto scaling group"
 }
@@ -35,7 +35,7 @@ variable "max_capacity" {
 }
 
 variable "desired_capacity" {
-  default     = 2
+  default     = 3
   type        = number
   description = "Desired capacity of Auto scaling group"
 }

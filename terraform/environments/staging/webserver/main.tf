@@ -94,6 +94,7 @@ module "web-asg" {
   name               = "autoscaling-group"
   target_group_arn   = module.web-alb.tg_arn
   launch_config_name = module.web-launch-config.launch_config_name
+  desired_capacity   = var.desired_capacity
 }
 
 
