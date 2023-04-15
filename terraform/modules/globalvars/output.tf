@@ -1,7 +1,7 @@
 # Default tags
 output "default_tags" {
   value = {
-    "Owner" = "group1"
+    "Owner" = "Group 1 members"
   }
 }
 

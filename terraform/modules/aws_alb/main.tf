@@ -21,8 +21,8 @@ module "globalvars" {
 data "terraform_remote_state" "network" {
   backend = "s3"
   config = {
-    bucket = "dev-finalproj-group1"
-    key    = "dev/network/terraform.tfstate"
+    bucket = "${var.env}-finalproj-group1"
+    key    = "network/terraform.tfstate"
     region = "us-east-1"
   }
 }
@@ -61,4 +61,11 @@ resource "aws_lb_listener" "this" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.this.arn
   }
+
+  tags = merge(
+    local.default_tags,
+    {
+      "Name" = "${local.name_prefix}-${var.name}-tg"
+    }
+  )
 }

@@ -1,7 +1,7 @@
 # Application Load balancer Outputs
 
 output "name" {
-  value = aws_lb.this.name
+  value = aws_lb.this.dns_name
 }
 
 output "tg_arn" {
