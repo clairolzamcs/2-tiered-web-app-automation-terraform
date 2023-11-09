@@ -1,4 +1,4 @@
-# Final Project: Two-Tier web application automation with Terraform
+# Two-Tier web application automation with Terraform
 
 ## Deployment Steps
 > **IMPORTANT:** Repeat these steps for each environment.
